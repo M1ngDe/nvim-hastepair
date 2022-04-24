@@ -1,6 +1,7 @@
 # briefpair
 
-Simple pair in nvim.
+Simple pair in nvim, less feature, mainly use for enchance nvim builtin
+function.
 
 Requires neovim 0.61
 
