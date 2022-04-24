@@ -3,8 +3,8 @@ local keymap = api.nvim_set_keymap
 local M = {}
 
 M.keymapping = {
-    jump_leftside = "<M-,>",
-    jump_rightside = "<M-;>"
+    jump_leftside_pair = "<M-,>",
+    jump_rightside_pair = "<M-;>"
 }
 
 local pair = {
@@ -18,10 +18,6 @@ local pair = {
 
 local function get_current_buf_lines(start_row, end_row)
     return api.nvim_buf_get_lines(0, start_row, end_row or start_row + 1, false)
-end
-
-local function set_current_buf_lines(lines, start_row, end_row)
-    api.nvim_buf_set_lines(0, start_row, end_row or start_row, false, lines or {})
 end
 
 local function set_current_buf_texts(texts, start_row, start_col, end_row, end_col)
@@ -84,7 +80,12 @@ for key in pairs(pair) do
     keymap("i", key, string.format([[<cmd>lua require"neopair".insert_pair("%s")<cr>]], key:gsub('"', '\\"')), opts)
 end
 
-keymap("i", "<M-,>", [[<cmd>lua require"neopair".jump_pair()<cr>]], opts)
-keymap("i", "<M-;>", [[<cmd>lua require"neopair".jump_pair(1)<cr>]], opts)
+function M.setup(key)
+    M.keymapping.jump_leftside_pair = key.jump_leftside_pair
+    M.keymapping.jump_rightside_pair = key.jump_rightside_pair
+end
+
+keymap("i", M.keymapping.jump_leftside_pair, [[<cmd>lua require"neopair".jump_pair()<cr>]], opts)
+keymap("i", M.keymapping.jump_rightside_pair, [[<cmd>lua require"neopair".jump_pair(1)<cr>]], opts)
 
 return M
