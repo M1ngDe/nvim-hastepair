@@ -32,34 +32,30 @@ function M.insert_pair(str)
     api.nvim_win_set_cursor(0, {row, col + 1})
 end
 
-local function index_left_bracket(row, col)
+local function index_left_pair(row, col)
     local line = get_current_buf_lines(row - 1)[1]:reverse()
     local length = #line
-    local idx
+    local idx = length + 1
     for key in pairs(pair) do
-        idx = string.find(line, "%" .. key, col == 0 and 1 or length - col + 1 + 1)
-        if idx then
-            col = length - idx + 1
-            return {row, col}
-        end
+        local newidx = string.find(line, "%" .. key, col == 0 and 1 or length - col + 1 + 1)
+        if newidx and newidx < idx then idx = newidx end
     end
-    if row > 1 then
-        return index_left_bracket(row - 1, 0)
-    end
+    if idx ~= length + 1 then return {row, length - idx + 1} end
+    if row > 1 then return index_left_pair(row - 1, 0) end
 end
 
-local function index_right_bracket(row, col)
+local function index_right_pair(row, col)
     local line = get_current_buf_lines(row - 1)[1]
-    local idx
+    local idx = #line + 1
     for _, value in pairs(pair) do
-        idx = string.find(line, "%" .. value, col+1)
-        if idx then
-            col = idx
-            return {row, col}
+        local newidx = string.find(line, "%" .. value, col+1)
+        if newidx and  idx > newidx then
+            idx = newidx
         end
     end
+    if idx ~= #line + 1 then return {row, idx} end
     if row < vim.api.nvim_buf_line_count(0) then
-        return index_right_bracket(row + 1, 0)
+        return index_right_pair(row + 1, 0)
     end
 end
 
@@ -67,9 +63,9 @@ function M.jump_pair(dir)
     local row, col = unpack(api.nvim_win_get_cursor(0))
     local pos
     if dir then
-        pos = index_right_bracket(row, col)
+        pos = index_right_pair(row, col)
     else
-        pos = index_left_bracket(row, col)
+        pos = index_left_pair(row, col)
     end
     if pos then api.nvim_win_set_cursor(0, pos) end
 end
@@ -77,7 +73,7 @@ end
 local opts = {noremap = true, silent = true}
 
 for key in pairs(pair) do
-    keymap("i", key, string.format([[<cmd>lua require"neopair".insert_pair("%s")<cr>]], key:gsub('"', '\\"')), opts)
+    keymap("i", key, string.format([[<cmd>lua require"briefpair".insert_pair("%s")<cr>]], key:gsub('"', '\\"')), opts)
 end
 
 function M.setup(key)
@@ -85,7 +81,7 @@ function M.setup(key)
     M.keymapping.jump_rightside_pair = key.jump_rightside_pair
 end
 
-keymap("i", M.keymapping.jump_leftside_pair, [[<cmd>lua require"neopair".jump_pair()<cr>]], opts)
-keymap("i", M.keymapping.jump_rightside_pair, [[<cmd>lua require"neopair".jump_pair(1)<cr>]], opts)
+keymap("i", M.keymapping.jump_leftside_pair, [[<cmd>lua require"briefpair".jump_pair()<cr>]], opts)
+keymap("i", M.keymapping.jump_rightside_pair, [[<cmd>lua require"briefpair".jump_pair(1)<cr>]], opts)
 
 return M
