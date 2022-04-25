@@ -36,8 +36,8 @@ local function index_left_pair(row, col)
     local line = get_current_buf_lines(row - 1)[1]:reverse()
     local length = #line
     local idx = length + 1
-    for key in pairs(pair) do
-        local newidx = string.find(line, "%" .. key, col == 0 and 1 or length - col + 1 + 1)
+    for l in pairs(pair) do
+        local newidx = string.find(line, "%" .. l, col == 0 and 1 or length - col + 1 + 1)
         if newidx and newidx < idx then idx = newidx end
     end
     if idx ~= length + 1 then return {row, length - idx + 1} end
@@ -47,8 +47,8 @@ end
 local function index_right_pair(row, col)
     local line = get_current_buf_lines(row - 1)[1]
     local idx = #line + 1
-    for _, value in pairs(pair) do
-        local newidx = string.find(line, "%" .. value, col+1)
+    for _, r in pairs(pair) do
+        local newidx = string.find(line, "%" .. r, col+1)
         if newidx and  idx > newidx then
             idx = newidx
         end
