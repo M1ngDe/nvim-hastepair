@@ -16,6 +16,8 @@ local pair = {
     ["`"] = "`"
 }
 
+local rex = "[%(%{%[%]%}%)%`%'%\"]"
+
 local function get_current_buf_lines(start_row, end_row)
     return api.nvim_buf_get_lines(0, start_row, end_row or start_row + 1, false)
 end
@@ -33,27 +35,19 @@ function M.insert_pair(str)
 end
 
 local function index_left_pair(row, col)
+    if col == 0 then return index_left_pair(row - 1, -1) end
     local line = get_current_buf_lines(row - 1)[1]:reverse()
     local length = #line
-    local idx = length + 1
-    for l in pairs(pair) do
-        local newidx = string.find(line, "%" .. l, col == 0 and 1 or length - col + 1 + 1)
-        if newidx and newidx < idx then idx = newidx end
-    end
-    if idx ~= length + 1 then return {row, length - idx + 1} end
-    if row > 1 then return index_left_pair(row - 1, 0) end
+    local idx = string.find(line, rex, col == -1 and 1 or length - col + 1 + 1)
+    -- if idx ~= length + 1 then return {row, length - idx + 1} end
+    if idx then return {row, length - idx + 1} end
+    if row > 1 then return index_left_pair(row - 1, -1) end
 end
 
 local function index_right_pair(row, col)
     local line = get_current_buf_lines(row - 1)[1]
-    local idx = #line + 1
-    for _, r in pairs(pair) do
-        local newidx = string.find(line, "%" .. r, col+1)
-        if newidx and  idx > newidx then
-            idx = newidx
-        end
-    end
-    if idx ~= #line + 1 then return {row, idx} end
+    local idx = string.find(line, rex, col + 1)
+    if idx then return {row, idx} end
     if row < vim.api.nvim_buf_line_count(0) then
         return index_right_pair(row + 1, 0)
     end
