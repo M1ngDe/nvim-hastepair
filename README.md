@@ -1,12 +1,12 @@
-# hastepair
+## hastepair
 
 Simply pair movement in nvim, less feature, mainly use for enhancing builtin function.
 
 Requires neovim above 0.7
 
-## Install
+### Install
 
-### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+#### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
 use {
@@ -15,7 +15,7 @@ use {
 }
 ```
 
-## Usage
+### Usage
 
 ```lua
 require'hastepair'.setup{
