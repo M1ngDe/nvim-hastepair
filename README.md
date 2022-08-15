@@ -1,4 +1,4 @@
-## hastepair
+## nvim-hastepair
 
 Simply pair movement in nvim, less feature, mainly use for enhancing builtin function.
 
