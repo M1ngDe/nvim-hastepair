@@ -1,8 +1,8 @@
 # hastepair
 
-Simply pair completion in nvim, less feature, mainly use for enhancing builtin function.
+Simply pair movement in nvim, less feature, mainly use for enhancing builtin function.
 
-Requires neovim 0.61
+Requires neovim above 0.7
 
 ## Install
 
@@ -10,8 +10,8 @@ Requires neovim 0.61
 
 ```lua
 use {
-    'Moukubi/hastepair',
-    config = require 'hastepair'.setup()
+    'Moukubi/nvim-hastepair',
+    config = require'hastepair'.setup()
 }
 ```
 
