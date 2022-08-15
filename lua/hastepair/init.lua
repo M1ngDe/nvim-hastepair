@@ -1,5 +1,4 @@
 local api = vim.api
-local keymap = api.nvim_set_keymap
 local M = {}
 
 M.keymapping = {
@@ -22,18 +21,6 @@ local function get_current_buf_lines(start_row, end_row)
     return api.nvim_buf_get_lines(0, start_row, end_row or start_row + 1, false)
 end
 
-local function set_current_buf_texts(texts, start_row, start_col, end_row, end_col)
-	api.nvim_buf_set_text(0, start_row, start_col, end_row or start_row, end_col or start_col, texts or {})
-end
-
-
-function M.insert_pair(str)
-    local row, col = unpack(api.nvim_win_get_cursor(0))
-    local line = api.nvim_get_current_line()
-    set_current_buf_texts(line:sub(col, col) == "\\" and {str} or {str .. pair[str]}, row -1, col)
-    api.nvim_win_set_cursor(0, {row, col + 1})
-end
-
 local function index_left_pair(row, col)
     if col == 0 then return index_left_pair(row - 1, -1) end
     local line = get_current_buf_lines(row - 1)[1]:reverse()
@@ -48,7 +35,7 @@ local function index_right_pair(row, col)
     local line = get_current_buf_lines(row - 1)[1]
     local idx = string.find(line, rex, col + 1)
     if idx then return {row, idx} end
-    if row < vim.api.nvim_buf_line_count(0) then
+    if row < api.nvim_buf_line_count(0) then
         return index_right_pair(row + 1, 0)
     end
 end
@@ -66,16 +53,12 @@ end
 
 local opts = {noremap = true, silent = true}
 
-for key in pairs(pair) do
-    keymap("i", key, string.format([[<cmd>lua require"briefpair".insert_pair("%s")<cr>]], key:gsub('"', '\\"')), opts)
-end
-
 function M.setup(key)
     M.keymapping.jump_leftside_pair = key.jump_leftside_pair
     M.keymapping.jump_rightside_pair = key.jump_rightside_pair
 end
 
-keymap("i", M.keymapping.jump_leftside_pair, [[<cmd>lua require"briefpair".jump_pair()<cr>]], opts)
-keymap("i", M.keymapping.jump_rightside_pair, [[<cmd>lua require"briefpair".jump_pair(1)<cr>]], opts)
+vim.keymap.set("i", M.keymapping.jump_leftside_pair, [[<cmd>lua require"briefpair".jump_pair()<cr>]], opts)
+vim.keymap.set("i", M.keymapping.jump_rightside_pair, [[<cmd>lua require"briefpair".jump_pair(1)<cr>]], opts)
 
 return M
