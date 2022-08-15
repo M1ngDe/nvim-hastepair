@@ -58,7 +58,7 @@ function M.setup(key)
     M.keymapping.jump_rightside_pair = key.jump_rightside_pair
 end
 
-vim.keymap.set("i", M.keymapping.jump_leftside_pair, [[<cmd>lua require"briefpair".jump_pair()<cr>]], opts)
-vim.keymap.set("i", M.keymapping.jump_rightside_pair, [[<cmd>lua require"briefpair".jump_pair(1)<cr>]], opts)
+vim.keymap.set("i", M.keymapping.jump_leftside_pair, [[<cmd>lua require"hastepair".jump_pair()<cr>]], opts)
+vim.keymap.set("i", M.keymapping.jump_rightside_pair, [[<cmd>lua require"hastepair".jump_pair(1)<cr>]], opts)
 
 return M
